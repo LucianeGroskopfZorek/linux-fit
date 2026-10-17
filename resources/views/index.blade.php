@@ -14,6 +14,7 @@
 
     <!-- Nosso arquivo de estilos -->
     <link rel="stylesheet" href="style.css" />
+
   </head>
   <body>
     <!-- ===== CABEÇALHO / MENU ===== -->
@@ -367,10 +368,17 @@
         </div>
       </div>
     </footer>
-
-    <button class="back-to-top" id="backToTop" aria-label="Voltar ao topo">
-      ↑
-    </button>
+    
+      <a
+        href="https://wa.me/5547984026171?text=Ol%C3%A1%21%20Gostaria%20de%20conhecer%20os%20planos%20da%20academia.%22"
+        class="whatsapp-float"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Fale com a academia pelo WhatsApp"
+      >
+        <span class="whatsapp-symbol">✆</span>
+        <span>Fale conosco</span>
+      </a>
 
     <script src="script.js"></script>
   </body>
