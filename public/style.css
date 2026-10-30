@@ -6,24 +6,24 @@
 }
 
 :root {
-  --primary-green: #293e24;
-  --primary-red: #b30d26;
-  --green-900: #1a2b1c;
-  --green-700: #39573c;
-  --green-100: #e8efe8;
-  --red-100: #f8e3e7;
-  --cream-50: #f7f3ee;
-  --cream-100: #efe7dd;
-  --white: #fffdfb;
-  --ink-900: #1f261f;
-  --ink-700: #465046;
-  --ink-500: #677167;
-  --line: rgba(41, 62, 36, 0.12);
-  --bg-primary: #f5f0ea;
-  --bg-secondary: #ede4d8;
-  --text-primary: #1f261f;
-  --text-secondary: #586155;
-  --shadow-soft: 0 18px 40px rgba(18, 27, 20, 0.12);
+  --primary-green: #7c3aed;
+  --primary-red: #ff4d5e;
+  --green-900: #1e1b4b;
+  --green-700: #5b21b6;
+  --green-100: #f3efff;
+  --red-100: #ffe8ea;
+  --cream-50: #ffffff;
+  --cream-100: #f7f5ff;
+  --white: #ffffff;
+  --ink-900: #1f2937;
+  --ink-700: #374151;
+  --ink-500: #6b7280;
+  --line: rgba(124, 58, 237, 0.10);
+  --bg-primary: #fafaff;
+  --bg-secondary: #f3f0ff;
+  --text-primary: #1f2937;
+  --text-secondary: #5b6472;
+  --shadow-soft: 0 18px 40px rgba(124, 58, 237, 0.12);
   --font-title: "Bebas Neue", sans-serif;
   --font-body: "Poppins", sans-serif;
 }
@@ -352,7 +352,7 @@ img {
 /* ===== CARDS (MODALIDADES) ===== */
 .cards-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 26px;
 }
 
@@ -396,6 +396,72 @@ img {
 .card p {
   color: var(--text-secondary);
   font-size: 0.92rem;
+}
+
+.modalities-message {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.modality-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+}
+
+.btn-schedule:focus-visible {
+  outline: 3px solid var(--primary-green);
+  outline-offset: 4px;
+}
+
+.modality-card p {
+  flex-grow: 1;
+}
+
+.modality-card.selected {
+  border-color: var(--primary-red);
+  background: var(--white);
+  box-shadow: 0 18px 34px rgba(179, 13, 38, 0.16);
+}
+
+.btn-schedule {
+  margin-top: 20px;
+}
+
+.btn-schedule:hover {
+  transform: translateY(-2px);
+}
+
+.modality-details {
+  margin-top: 30px;
+  padding: 28px;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: var(--shadow-soft);
+  scroll-margin-top: 100px;
+}
+
+.modality-details h3 {
+  margin-bottom: 12px;
+  color: var(--primary-green);
+  font-family: var(--font-title);
+  font-size: 1.8rem;
+  letter-spacing: 0.04em;
+}
+
+.modality-details h4 {
+  margin-top: 16px;
+  margin-bottom: 6px;
+  color: var(--ink-900);
+}
+
+.modality-details ul {
+  padding-left: 20px;
+  list-style: disc;
+  color: var(--text-secondary);
 }
 
 /* ===== PLANOS ===== */
@@ -775,5 +841,126 @@ img {
   .btn {
     text-align: center;
     width: 100%;
+  }
+}
+/* Botão do WhatsApp fixo na tela */
+.whatsapp-float {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    background: #128c7e;
+    color: #fff;
+    padding: 14px 18px;
+    border-radius: 30px;
+    text-decoration: none;
+    box-shadow: 0 4px 12px #0003;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+
+.whatsapp-float:hover,
+.whatsapp-float:focus-visible {
+    background: #075e54;
+    box-shadow: 0 12px 28px rgba(17, 25, 20, 0.28);
+    transform: translateY(-3px);
+}
+
+.whatsapp-symbol {
+    font-size: 1.4rem;
+    line-height: 1;
+}
+:root {
+  --primary-green: #7c3aed;   /* agora roxo: usado em preços e títulos de detalhes */
+  --primary-red: #ff4d5e;     /* coral vibrante */
+  --green-900: #1e1b4b;
+  --green-700: #5b21b6;
+  --green-100: #f3efff;
+  --red-100: #ffe8ea;
+  --cream-50: #ffffff;
+  --cream-100: #f7f5ff;
+  --white: #ffffff;
+  --ink-900: #1f2937;
+  --ink-700: #374151;
+  --ink-500: #6b7280;
+  --line: rgba(124, 58, 237, 0.10);
+  --bg-primary: #fafaff;
+  --bg-secondary: #f3f0ff;
+  --text-primary: #1f2937;
+  --text-secondary: #5b6472;
+  --shadow-soft: 0 18px 40px rgba(124, 58, 237, 0.12);
+  --font-title: "Outfit", "Poppins", sans-serif;
+  --font-body: "Poppins", sans-serif;
+}
+/* ===== CARDS DE MODALIDADES (gerados pela API) ===== */
+#lista-modalidades {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 26px;
+}
+
+.card-modalidade {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  padding: 30px 22px;
+  box-shadow: 0 10px 30px rgba(124, 58, 237, 0.07);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.card-modalidade:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 40px rgba(124, 58, 237, 0.16);
+}
+
+.card-modalidade.selected {
+  border-color: var(--primary-green);
+  box-shadow: 0 20px 40px rgba(124, 58, 237, 0.24);
+}
+
+.card-modalidade h3 {
+  margin-bottom: 10px;
+  color: var(--ink-900);
+}
+
+.card-modalidade p {
+  flex-grow: 1; /* deixa todos os botões alinhados embaixo */
+  color: var(--text-secondary);
+  font-size: 0.92rem;
+}
+
+.btn-horarios {
+  margin-top: 20px;
+  padding: 12px 28px;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ff4d5e 0%, #7c3aed 100%);
+  color: #fff;
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-horarios:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(124, 58, 237, 0.3);
+}
+
+@media (max-width: 900px) {
+  #lista-modalidades {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  #lista-modalidades {
+    grid-template-columns: 1fr;
   }
 }

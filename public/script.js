@@ -16,6 +16,165 @@ navLinks.forEach(link => {
     });
 });
 
+// ===== MODALIDADES E HORÁRIOS CARREGADOS DA API =====
+const listaModalidades = document.getElementById('lista-modalidades');
+const painelModalidade = document.getElementById('detalhes-modalidade');
+let consultaAtual = 0;
+
+function criarCardModalidade(modalidade) {
+    const card = document.createElement('article');
+    card.className = 'card modality-card';
+    card.dataset.modalidadeId = modalidade.id;
+
+    const icone = document.createElement('span');
+    icone.className = 'card-icon';
+    icone.setAttribute('aria-hidden', 'true');
+    icone.textContent = modalidade.icone;
+
+    const titulo = document.createElement('h3');
+    titulo.textContent = modalidade.nome;
+
+    const descricao = document.createElement('p');
+    descricao.textContent = modalidade.descricao;
+
+    const botao = document.createElement('button');
+    botao.type = 'button';
+    botao.className = 'btn btn-primary btn-schedule';
+    botao.setAttribute('aria-controls', 'detalhes-modalidade');
+    botao.setAttribute('aria-pressed', 'false');
+    botao.textContent = 'Ver horários';
+
+    card.append(icone, titulo, descricao, botao);
+    return card;
+}
+
+async function carregarModalidades() {
+    try {
+        const resposta = await fetch('/api/modalidades', {
+            headers: { Accept: 'application/json' }
+        });
+        if (!resposta.ok) {
+            throw new Error(`Falha ao consultar modalidades (HTTP ${resposta.status}).`);
+        }
+
+        const modalidades = await resposta.json();
+        if (!Array.isArray(modalidades)) {
+            throw new Error('A API retornou uma lista de modalidades inválida.');
+        }
+
+        const cards = modalidades.map(modalidade => {
+            if (
+                !modalidade ||
+                !Number.isInteger(modalidade.id) ||
+                typeof modalidade.nome !== 'string' ||
+                typeof modalidade.descricao !== 'string' ||
+                typeof modalidade.icone !== 'string'
+            ) {
+                throw new Error('A API retornou uma modalidade com dados inválidos.');
+            }
+
+            return criarCardModalidade(modalidade);
+        });
+
+        if (cards.length === 0) {
+            const mensagem = document.createElement('p');
+            mensagem.className = 'modalities-message';
+            mensagem.textContent = 'Nenhuma modalidade disponível no momento.';
+            listaModalidades.replaceChildren(mensagem);
+            return;
+        }
+
+        listaModalidades.replaceChildren(...cards);
+    } catch (erro) {
+        console.error('Não foi possível carregar as modalidades:', erro);
+        const mensagem = document.createElement('p');
+        mensagem.className = 'modalities-message';
+        mensagem.textContent =
+            'Não foi possível carregar as modalidades. Tente novamente mais tarde.';
+        listaModalidades.replaceChildren(mensagem);
+    } finally {
+        listaModalidades.setAttribute('aria-busy', 'false');
+    }
+}
+
+async function carregarHorarios(id, cardSelecionado) {
+    const consulta = ++consultaAtual;
+    painelModalidade.replaceChildren();
+    painelModalidade.hidden = false;
+    painelModalidade.textContent = 'Carregando horários...';
+
+    listaModalidades.querySelectorAll('.modality-card').forEach(card => {
+        const selecionado = card === cardSelecionado;
+        card.classList.toggle('selected', selecionado);
+        card.querySelector('.btn-schedule')
+            .setAttribute('aria-pressed', String(selecionado));
+    });
+
+    painelModalidade.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    try {
+        const resposta = await fetch(`/api/modalidades/${id}/horarios`, {
+            headers: { Accept: 'application/json' }
+        });
+        if (!resposta.ok) {
+            throw new Error(`Falha ao consultar horários (HTTP ${resposta.status}).`);
+        }
+
+        const dados = await resposta.json();
+        if (
+            consulta !== consultaAtual ||
+            typeof dados.modalidade !== 'string' ||
+            typeof dados.professor !== 'string' ||
+            !Array.isArray(dados.horarios) ||
+            !dados.horarios.every(horario => typeof horario === 'string')
+        ) {
+            if (consulta === consultaAtual) {
+                throw new Error('A API retornou horários em formato inválido.');
+            }
+            return;
+        }
+
+        const titulo = document.createElement('h3');
+        titulo.textContent = dados.modalidade;
+
+        const professor = document.createElement('p');
+        const rotuloProfessor = document.createElement('strong');
+        rotuloProfessor.textContent = 'Professor(a): ';
+        professor.append(rotuloProfessor, dados.professor);
+
+        const subtitulo = document.createElement('h4');
+        subtitulo.textContent = 'Horários disponíveis:';
+
+        const horarios = document.createElement('ul');
+        dados.horarios.forEach(horario => {
+            const item = document.createElement('li');
+            item.textContent = horario;
+            horarios.append(item);
+        });
+
+        painelModalidade.replaceChildren(titulo, professor, subtitulo, horarios);
+    } catch (erro) {
+        if (consulta !== consultaAtual) {
+            return;
+        }
+
+        console.error('Não foi possível carregar os horários:', erro);
+        painelModalidade.textContent =
+            'Não foi possível carregar os horários. Tente novamente mais tarde.';
+    }
+}
+
+listaModalidades.addEventListener('click', evento => {
+    const card = evento.target.closest('.modality-card');
+    if (!card || !listaModalidades.contains(card)) {
+        return;
+    }
+
+    carregarHorarios(card.dataset.modalidadeId, card);
+});
+
+carregarModalidades();
+
 // ===== DESTAQUE DE PLANO SELECIONADO =====
 const planCards = document.querySelectorAll('.plan-card');
 const planButtons = document.querySelectorAll('.btn-plan');

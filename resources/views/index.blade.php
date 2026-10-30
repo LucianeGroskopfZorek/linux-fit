@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="style.css" />
 
   </head>
+
   <body>
     <!-- ===== CABEÇALHO / MENU ===== -->
     <header class="header" id="header">
@@ -122,56 +123,21 @@
         <h2 class="section-title">
           Nossas <span class="text-neon-orange">Modalidades</span>
         </h2>
-        <div class="cards-grid">
-          <div class="card">
-            <span class="card-icon">💪</span>
-            <h3>Musculação</h3>
-            <p>
-              Treinos personalizados com acompanhamento técnico para ganho de
-              força e hipertrofia.
-            </p>
-          </div>
-          <div class="card">
-            <span class="card-icon">🔥</span>
-            <h3>Treinamento Funcional</h3>
-            <p>
-              Exercícios dinâmicos que trabalham o corpo todo e melhoram o
-              condicionamento geral.
-            </p>
-          </div>
-          <div class="card">
-            <span class="card-icon">🧘</span>
-            <h3>Pilates</h3>
-            <p>
-              Fortalecimento do core, flexibilidade e consciência corporal em
-              aulas guiadas.
-            </p>
-          </div>
-          <div class="card">
-            <span class="card-icon">👥</span>
-            <h3>Aulas Coletivas</h3>
-            <p>
-              Energia em grupo com modalidades como spinning, zumba e treino em
-              circuito.
-            </p>
-          </div>
-          <div class="card">
-            <span class="card-icon">🏃</span>
-            <h3>Cardio</h3>
-            <p>
-              Esteiras, bikes e elípticos para melhorar seu condicionamento
-              cardiovascular.
-            </p>
-          </div>
-          <div class="card">
-            <span class="card-icon">🎯</span>
-            <h3>Personal Trainer</h3>
-            <p>
-              Acompanhamento individual e exclusivo para acelerar seus
-              resultados.
-            </p>
-          </div>
+        <div
+          class="cards-grid modalities-grid"
+          id="lista-modalidades"
+          aria-live="polite"
+          aria-busy="true"
+        >
+          <p class="modalities-message">Carregando modalidades...</p>
         </div>
+        <div
+          class="modality-details"
+          id="detalhes-modalidade"
+          aria-live="polite"
+          aria-atomic="true"
+          hidden
+        ></div>
       </div>
     </section>
 
@@ -319,7 +285,8 @@
             </div>
           </div>
 
-          <form class="contact-form" id="contactForm" novalidate>
+          <form class="contact-form" id="contactForm" action="{{ route('contato.enviar') }}" method="POST" novalidate>
+            @csrf
             <div class="form-group">
               <label for="nome">Nome</label>
               <input type="text" id="nome" name="nome" required />
@@ -348,9 +315,20 @@
             <button type="submit" class="btn btn-primary">
               Enviar Mensagem
             </button>
-            <p class="form-success" id="formSuccess">
-              Mensagem enviada com sucesso! Entraremos em contato em breve.
-            </p>
+
+            @if(session('sucesso'))
+              <p style="color: #2e7d32; font-weight: 600; margin-top: 12px;">
+                {{ session('sucesso') }}
+              </p>
+            @endif
+
+            @if($errors->any())
+              <ul style="color: #c62828; margin-top: 12px;">
+                @foreach($errors->all() as $erro)
+                  <li>{{ $erro }}</li>
+                @endforeach
+              </ul>
+            @endif
           </form>
         </div>
       </div>
@@ -368,9 +346,9 @@
         </div>
       </div>
     </footer>
-    
+
       <a
-        href="https://wa.me/5547984026171?text=Ol%C3%A1%21%20Gostaria%20de%20conhecer%20os%20planos%20da%20academia.%22"
+        href="https://wa.me/5547992929550?text=Ol%C3%A1%21%20Gostaria%20de%20conhecer%20os%20planos%20da%20academia."
         class="whatsapp-float"
         target="_blank"
         rel="noopener noreferrer"
@@ -380,6 +358,125 @@
         <span>Fale conosco</span>
       </a>
 
-    <script src="script.js"></script>
+<script>
+ 
+async function carregarModalidades() {
+    const lista = document.getElementById(
+        'lista-modalidades'
+    );
+ 
+    try {
+        const resposta = await fetch('/api/modalidades');
+ 
+        if (!resposta.ok) {
+            throw new Error('Erro ao consultar modalidades');
+        }
+ 
+        const modalidades = await resposta.json();
+ 
+        lista.innerHTML = '';
+ 
+        modalidades.forEach(modalidade => {
+            const card = document.createElement('div');
+            card.className = 'card-modalidade';
+ 
+            const titulo = document.createElement('h3');
+            titulo.textContent = modalidade.nome;
+ 
+            const descricao = document.createElement('p');
+            descricao.textContent = modalidade.descricao;
+ 
+            const botao = document.createElement('button');
+            botao.textContent = 'Ver horários';
+            botao.className = 'btn-horarios';
+ 
+            botao.addEventListener('click', () => {
+                carregarHorarios(modalidade.id, card);
+            });
+ 
+            card.appendChild(titulo);
+            card.appendChild(descricao);
+            card.appendChild(botao);
+ 
+            lista.appendChild(card);
+        });
+ 
+    } catch (erro) {
+        console.error(erro);
+        lista.textContent =
+            'Erro ao carregar modalidades.';
+    }
+}
+ 
+let consultaAtual = 0;
+ 
+async function carregarHorarios(id, cardSelecionado) {
+    const detalhes = document.getElementById(
+        'detalhes-modalidade'
+    );
+ 
+    const consulta = ++consultaAtual;
+    detalhes.hidden = false;
+
+    // Destaca o card selecionado e remove o destaque dos demais.
+    document.querySelectorAll('.card-modalidade').forEach(card => {
+        card.classList.remove('selected');
+    });
+    cardSelecionado.classList.add('selected');
+ 
+    detalhes.textContent = 'Carregando horários...';
+ 
+    try {
+        const resposta = await fetch(
+            `/api/modalidades/${id}/horarios`
+        );
+ 
+        if (!resposta.ok) {
+            throw new Error('Erro ao consultar horários');
+        }
+ 
+        const dados = await resposta.json();
+ 
+        if (consulta !== consultaAtual) return;
+ 
+        detalhes.innerHTML = '';
+ 
+        const titulo = document.createElement('h3');
+        titulo.textContent = dados.modalidade;
+ 
+        const professor = document.createElement('p');
+        professor.textContent =
+            'Professor(a): ' + dados.professor;
+ 
+        const subtitulo = document.createElement('h4');
+        subtitulo.textContent = 'Horários disponíveis:';
+ 
+        const lista = document.createElement('ul');
+ 
+        dados.horarios.forEach(horario => {
+            const item = document.createElement('li');
+            item.textContent = horario;
+            lista.appendChild(item);
+        });
+ 
+        detalhes.appendChild(titulo);
+        detalhes.appendChild(professor);
+        detalhes.appendChild(subtitulo);
+        detalhes.appendChild(lista);
+        detalhes.scrollIntoView({ behavior: 'smooth', block: 'start' });
+ 
+    } catch (erro) {
+        if (consulta !== consultaAtual) return;
+ 
+        console.error(erro);
+        detalhes.textContent =
+            'Não foi possível carregar os horários.';
+    }
+}
+ 
+carregarModalidades();
+ 
+    </script>
+ 
   </body>
 </html>
