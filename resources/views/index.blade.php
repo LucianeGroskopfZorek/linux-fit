@@ -19,31 +19,24 @@
 
   <body>
     <!-- ===== CABEÇALHO / MENU ===== -->
-    <header class="header" id="header">
-      <div class="container header-content">
-        <a href="#inicio" class="logo">LINUX<span>FIT</span></a>
-
-        <nav class="nav" id="nav">
-          <ul class="nav-list" id="navList">
-            <li><a href="#inicio" class="nav-link">Início</a></li>
-            <li><a href="#sobre" class="nav-link">Sobre</a></li>
-            <li><a href="#modalidades" class="nav-link">Modalidades</a></li>
-            <li><a href="#planos" class="nav-link">Planos</a></li>
-            <li><a href="#horarios" class="nav-link">Horários</a></li>
-            <li><a href="#contato" class="nav-link">Contato</a></li>
-          </ul>
-        </nav>
-
-        <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu">
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
-      </div>
-    </header>
+    @include('partials.menu', ['menuPage' => 'index'])
 
     <!-- ===== BANNER PRINCIPAL (RF01) ===== -->
     <section class="hero" id="inicio">
+      <video
+        class="hero-video"
+        autoplay
+        muted
+        loop
+        playsinline
+        preload="metadata"
+        aria-hidden="true"
+      >
+        <source
+          src="{{ asset('imagens/istockphoto-1410441629-640_adpp_is.mp4') }}"
+          type="video/mp4"
+        />
+      </video>
       <div class="hero-overlay"></div>
       <div class="container hero-content">
         <h1>SUPERE SEUS <span class="text-neon-orange">LIMITES</span></h1>
@@ -121,7 +114,7 @@
     <section class="section section-alt" id="modalidades">
       <div class="container">
         <h2 class="section-title">
-          Nossas <span class="text-neon-orange">Modalidades</span>
+          Nossas <span class="text-neon-orange">Modalidades e Professores</span>
         </h2>
         <div
           class="cards-grid modalities-grid"
@@ -148,44 +141,42 @@
           Nossos <span class="text-neon-green">Planos</span>
         </h2>
         <div class="plans-grid">
-          <div class="plan-card" data-plan="mensal">
-            <h3>Mensal</h3>
-            <p class="plan-price">R$ 99<span>/mês</span></p>
-            <ul class="plan-benefits">
-              <li>Acesso à musculação</li>
-              <li>Aulas coletivas</li>
-              <li>Avaliação física inicial</li>
-            </ul>
-            <button class="btn btn-outline btn-plan">Escolher Plano</button>
-          </div>
-          <div class="plan-card plan-featured" data-plan="trimestral">
-            <span class="plan-badge">Mais Popular</span>
-            <h3>Trimestral</h3>
-            <p class="plan-price">R$ 249<span>/3 meses</span></p>
-            <ul class="plan-benefits">
-              <li>Tudo do plano Mensal</li>
-              <li>Acesso ao Pilates</li>
-              <li>1 sessão de personal/mês</li>
-              <li>Avaliação física mensal</li>
-            </ul>
-            <button class="btn btn-primary btn-plan">Escolher Plano</button>
-          </div>
-          <div class="plan-card" data-plan="anual">
-            <h3>Anual</h3>
-            <p class="plan-price">R$ 899<span>/ano</span></p>
-            <ul class="plan-benefits">
-              <li>Tudo do plano Trimestral</li>
-              <li>Acesso ilimitado a todas as modalidades</li>
-              <li>Personal Trainer semanal</li>
-            </ul>
-            <button class="btn btn-outline btn-plan">Escolher Plano</button>
-          </div>
+          @foreach ($planos as $plano)
+            <div
+              class="plan-card {{ $plano['destaque'] ? 'plan-featured' : '' }}"
+              data-plan="{{ strtolower($plano['nome']) }}"
+            >
+              @if ($plano['destaque'])
+                <span class="plan-badge">Mais Popular</span>
+              @endif
+              <h3>{{ $plano['nome'] }}</h3>
+              <p class="plan-price">
+                R$ {{ $plano['preco'] }}<span>/{{ $plano['periodicidade'] }}</span>
+              </p>
+              <ul class="plan-benefits">
+                @foreach ($plano['beneficios'] as $beneficio)
+                  <li>{{ $beneficio }}</li>
+                @endforeach
+              </ul>
+              <a
+                href="{{ route('planos.show', $plano['id']) }}"
+                class="btn-detalhes"
+              >
+                Ver detalhes
+              </a>
+            </div>
+          @endforeach
         </div>
       </div>
     </section>
 
+    <!-- ===== AGENDAMENTO DE AULAS ===== -->
+    <section class="section section-alt" id="aulas">
+      @include('partials.aulas-secao', ['aulas' => $aulas])
+    </section>
+
     <!-- ===== HORÁRIOS (RF06) ===== -->
-    <section class="section section-alt" id="horarios">
+    <section class="section" id="horarios">
       <div class="container">
         <h2 class="section-title">
           Horários de <span class="text-neon-orange">Funcionamento</span>
@@ -380,23 +371,36 @@ async function carregarModalidades() {
             const card = document.createElement('div');
             card.className = 'card-modalidade';
  
+            const imagem = document.createElement('img');
+            imagem.className = 'card-modalidade-imagem';
+            imagem.src = modalidade.imagem;
+            imagem.alt = `Imagem da modalidade ${modalidade.nome}`;
+            imagem.loading = 'lazy';
+
             const titulo = document.createElement('h3');
             titulo.textContent = modalidade.nome;
- 
+
             const descricao = document.createElement('p');
             descricao.textContent = modalidade.descricao;
  
-            const botao = document.createElement('button');
-            botao.textContent = 'Ver horários';
-            botao.className = 'btn-horarios';
- 
-            botao.addEventListener('click', () => {
+            card.setAttribute('role', 'button');
+            card.setAttribute('tabindex', '0');
+            card.setAttribute('aria-controls', 'detalhes-modalidade');
+
+            card.addEventListener('click', () => {
                 carregarHorarios(modalidade.id, card);
             });
+
+            card.addEventListener('keydown', evento => {
+                if (evento.key === 'Enter' || evento.key === ' ') {
+                    evento.preventDefault();
+                    carregarHorarios(modalidade.id, card);
+                }
+            });
  
+            card.appendChild(imagem);
             card.appendChild(titulo);
             card.appendChild(descricao);
-            card.appendChild(botao);
  
             lista.appendChild(card);
         });
@@ -436,17 +440,41 @@ async function carregarHorarios(id, cardSelecionado) {
         }
  
         const dados = await resposta.json();
- 
-        if (consulta !== consultaAtual) return;
+
+        if (
+            consulta !== consultaAtual ||
+            typeof dados.imagem_professores !== 'string'
+        ) return;
  
         detalhes.innerHTML = '';
+ 
+        const imagem = document.createElement('img');
+        imagem.className = 'modality-details-image';
+        imagem.src = dados.imagem_professores;
+        imagem.alt = `Professores(as) da modalidade ${dados.modalidade}`;
+        imagem.loading = 'lazy';
  
         const titulo = document.createElement('h3');
         titulo.textContent = dados.modalidade;
  
         const professor = document.createElement('p');
         professor.textContent =
-            'Professor(a): ' + dados.professor;
+            'Professores(as): ' + dados.professores.join(' • ');
+
+        const tituloBiografias = document.createElement('h4');
+        tituloBiografias.textContent = 'Biografia dos professores(as):';
+
+        const biografias = document.createElement('div');
+        biografias.className = 'teacher-biographies';
+        dados.professores.forEach(nome => {
+            const artigo = document.createElement('article');
+            const nomeProfessor = document.createElement('strong');
+            nomeProfessor.textContent = nome;
+            const texto = document.createElement('p');
+            texto.textContent = dados.biografias[nome];
+            artigo.append(nomeProfessor, texto);
+            biografias.append(artigo);
+        });
  
         const subtitulo = document.createElement('h4');
         subtitulo.textContent = 'Horários disponíveis:';
@@ -459,8 +487,11 @@ async function carregarHorarios(id, cardSelecionado) {
             lista.appendChild(item);
         });
  
+        detalhes.appendChild(imagem);
         detalhes.appendChild(titulo);
         detalhes.appendChild(professor);
+        detalhes.appendChild(tituloBiografias);
+        detalhes.appendChild(biografias);
         detalhes.appendChild(subtitulo);
         detalhes.appendChild(lista);
         detalhes.scrollIntoView({ behavior: 'smooth', block: 'start' });

@@ -31,20 +31,23 @@ function criarCardModalidade(modalidade) {
     icone.setAttribute('aria-hidden', 'true');
     icone.textContent = modalidade.icone;
 
+    const imagem = document.createElement('img');
+    imagem.className = 'card-modalidade-imagem';
+    imagem.src = modalidade.imagem;
+    imagem.alt = `Imagem da modalidade ${modalidade.nome}`;
+    imagem.loading = 'lazy';
+
     const titulo = document.createElement('h3');
     titulo.textContent = modalidade.nome;
 
     const descricao = document.createElement('p');
     descricao.textContent = modalidade.descricao;
 
-    const botao = document.createElement('button');
-    botao.type = 'button';
-    botao.className = 'btn btn-primary btn-schedule';
-    botao.setAttribute('aria-controls', 'detalhes-modalidade');
-    botao.setAttribute('aria-pressed', 'false');
-    botao.textContent = 'Ver horários';
+    card.setAttribute('role', 'button');
+    card.setAttribute('tabindex', '0');
+    card.setAttribute('aria-controls', 'detalhes-modalidade');
 
-    card.append(icone, titulo, descricao, botao);
+    card.append(imagem, icone, titulo, descricao);
     return card;
 }
 
@@ -68,7 +71,8 @@ async function carregarModalidades() {
                 !Number.isInteger(modalidade.id) ||
                 typeof modalidade.nome !== 'string' ||
                 typeof modalidade.descricao !== 'string' ||
-                typeof modalidade.icone !== 'string'
+                typeof modalidade.icone !== 'string' ||
+                typeof modalidade.imagem !== 'string'
             ) {
                 throw new Error('A API retornou uma modalidade com dados inválidos.');
             }
@@ -106,8 +110,7 @@ async function carregarHorarios(id, cardSelecionado) {
     listaModalidades.querySelectorAll('.modality-card').forEach(card => {
         const selecionado = card === cardSelecionado;
         card.classList.toggle('selected', selecionado);
-        card.querySelector('.btn-schedule')
-            .setAttribute('aria-pressed', String(selecionado));
+        card.setAttribute('aria-pressed', String(selecionado));
     });
 
     painelModalidade.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -124,7 +127,12 @@ async function carregarHorarios(id, cardSelecionado) {
         if (
             consulta !== consultaAtual ||
             typeof dados.modalidade !== 'string' ||
-            typeof dados.professor !== 'string' ||
+            typeof dados.imagem_professores !== 'string' ||
+            !Array.isArray(dados.professores) ||
+            dados.professores.length !== 2 ||
+            !dados.professores.every(professor => typeof professor === 'string') ||
+            !dados.biografias ||
+            !dados.professores.every(professor => typeof dados.biografias[professor] === 'string') ||
             !Array.isArray(dados.horarios) ||
             !dados.horarios.every(horario => typeof horario === 'string')
         ) {
@@ -137,10 +145,31 @@ async function carregarHorarios(id, cardSelecionado) {
         const titulo = document.createElement('h3');
         titulo.textContent = dados.modalidade;
 
+        const imagem = document.createElement('img');
+        imagem.className = 'modality-details-image';
+        imagem.src = dados.imagem_professores;
+        imagem.alt = `Professores(as) da modalidade ${dados.modalidade}`;
+        imagem.loading = 'lazy';
+
         const professor = document.createElement('p');
         const rotuloProfessor = document.createElement('strong');
-        rotuloProfessor.textContent = 'Professor(a): ';
-        professor.append(rotuloProfessor, dados.professor);
+        rotuloProfessor.textContent = 'Professores(as): ';
+        professor.append(rotuloProfessor, dados.professores.join(' • '));
+
+        const tituloBiografias = document.createElement('h4');
+        tituloBiografias.textContent = 'Biografia dos professores(as):';
+
+        const biografias = document.createElement('div');
+        biografias.className = 'teacher-biographies';
+        dados.professores.forEach(nome => {
+            const artigo = document.createElement('article');
+            const nomeProfessor = document.createElement('strong');
+            nomeProfessor.textContent = nome;
+            const texto = document.createElement('p');
+            texto.textContent = dados.biografias[nome];
+            artigo.append(nomeProfessor, texto);
+            biografias.append(artigo);
+        });
 
         const subtitulo = document.createElement('h4');
         subtitulo.textContent = 'Horários disponíveis:';
@@ -152,7 +181,7 @@ async function carregarHorarios(id, cardSelecionado) {
             horarios.append(item);
         });
 
-        painelModalidade.replaceChildren(titulo, professor, subtitulo, horarios);
+        painelModalidade.replaceChildren(imagem, titulo, professor, tituloBiografias, biografias, subtitulo, horarios);
     } catch (erro) {
         if (consulta !== consultaAtual) {
             return;
@@ -170,6 +199,20 @@ listaModalidades.addEventListener('click', evento => {
         return;
     }
 
+    carregarHorarios(card.dataset.modalidadeId, card);
+});
+
+listaModalidades.addEventListener('keydown', evento => {
+    if (evento.key !== 'Enter' && evento.key !== ' ') {
+        return;
+    }
+
+    const card = evento.target.closest('.modality-card');
+    if (!card || !listaModalidades.contains(card)) {
+        return;
+    }
+
+    evento.preventDefault();
     carregarHorarios(card.dataset.modalidadeId, card);
 });
 
