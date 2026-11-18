@@ -78,6 +78,19 @@
             >
           </div>
 
+          <div class="form-group">
+            <label for="password">Senha</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              autocomplete="new-password"
+              minlength="6"
+              placeholder="Mínimo de 6 caracteres"
+              required
+            >
+          </div>
+
           <button type="submit" class="btn btn-primary alunos-submit">Cadastrar</button>
         </form>
       </section>

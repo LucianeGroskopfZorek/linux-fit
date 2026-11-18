@@ -50,3 +50,16 @@ Route::get('/professores', [ProfessorController::class, 'index'])
 
 Route::post('/professores', [ProfessorController::class, 'create'])
     ->name('professores.create');
+
+
+Route::view('/login', 'login')->name('login');
+
+Route::post('/login', [AlunoController::class, 'entrar'])
+    ->middleware('throttle:5,1')
+    ->name('login.entrar');
+
+Route::get('/minha-area', [AlunoController::class, 'minhaArea'])
+    ->name('minha-area');
+
+Route::post('/sair', [AlunoController::class, 'sair'])
+    ->name('logout');
