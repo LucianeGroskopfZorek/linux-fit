@@ -13,6 +13,10 @@ class Professor extends Model
     protected $fillable = [
         'nome',
         'modalidades',
-        'especialidades'
+        'especialidades',
+        'email',
+        'password',
     ];
+
+    protected $hidden = ['password'];
 }

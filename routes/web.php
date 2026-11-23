@@ -51,8 +51,19 @@ Route::get('/professores', [ProfessorController::class, 'index'])
 Route::post('/professores', [ProfessorController::class, 'create'])
     ->name('professores.create');
 
+Route::post('/professores/cadastro', [ProfessorController::class, 'cadastrar'])
+    ->name('professores.cadastro');
+Route::get('/professor/login', [ProfessorController::class, 'login'])
+    ->name('professor.login');
+Route::post('/professor/login', [ProfessorController::class, 'entrar'])
+    ->middleware('throttle:5,1')
+    ->name('professor.entrar');
+Route::get('/professor/minha-area', [ProfessorController::class, 'minhaArea'])
+    ->name('professor.minha-area');
+Route::post('/professor/sair', [ProfessorController::class, 'sair'])
+    ->name('professor.sair');
 
-Route::view('/login', 'login')->name('login');
+Route::get('/login', [AlunoController::class, 'login'])->name('login');
 
 Route::post('/login', [AlunoController::class, 'entrar'])
     ->middleware('throttle:5,1')

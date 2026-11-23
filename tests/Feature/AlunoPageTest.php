@@ -23,6 +23,6 @@ class AlunoPageTest extends TestCase
         $response->assertSee('Alunos');
         $response->assertSee('name="email"', false);
         $response->assertSee('type="password"', false);
-        $response->assertSee('name="senha"', false);
+        $response->assertSee('name="password"', false);
     }
 }

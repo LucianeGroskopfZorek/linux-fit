@@ -2,12 +2,27 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\View\View;
 
 class AlunoController extends Controller
 {
+    public function login(Request $request): View|RedirectResponse
+    {
+        if ($request->session()->get('aluno_id') !== null) {
+            return redirect()->route('minha-area');
+        }
+
+        if ($request->session()->get('professor_id') !== null) {
+            return redirect()->route('professor.minha-area');
+        }
+
+        return view('login');
+    }
+
     public function index()
     {
         return view('alunos');
@@ -52,7 +67,7 @@ public function entrar(Request $request)
     );
 
     if (!$aluno || !$aluno->password || !Hash::check($dados['password'], $aluno->password)) {
-        return back()->withErrors([
+        return redirect()->route('login')->withErrors([
             'email' => 'E-mail ou senha incorretos.',
         ])->onlyInput('email');
     }

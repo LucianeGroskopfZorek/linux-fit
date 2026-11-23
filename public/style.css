@@ -1041,19 +1041,7 @@ img {
   }
 }
 
-@media (max-width: 700px) {
-  .imc-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .imc-form {
-    padding: 24px 20px;
-  }
-
-  .imc-scale {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
+@media (max-width: 1100px) {
   .menu-toggle {
     display: flex;
   }
@@ -1070,7 +1058,8 @@ img {
   }
 
   .nav.active {
-    max-height: 420px;
+    max-height: 80vh;
+    overflow-y: auto;
   }
 
   .nav-list {
@@ -1088,6 +1077,20 @@ img {
     display: block;
     padding: 16px 24px;
     color: #fff;
+  }
+}
+
+@media (max-width: 700px) {
+  .imc-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .imc-form {
+    padding: 24px 20px;
+  }
+
+  .imc-scale {
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .cards-grid,
@@ -1506,6 +1509,71 @@ img {
 .alunos-submit:focus-visible {
   outline: 3px solid rgba(124, 58, 237, 0.35);
   outline-offset: 3px;
+}
+
+/* ===== ÁREA DO ALUNO ===== */
+.student-site {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: "Poppins", sans-serif;
+}
+
+.student-site .logo {
+  font-family: "Bebas Neue", sans-serif;
+}
+
+.alunos-page.student-area-page {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  padding: 130px 0 70px;
+}
+
+.student-login-container {
+  max-width: 520px;
+}
+
+.student-account-container {
+  max-width: 680px;
+}
+
+.student-login-card .alunos-msg-erro {
+  margin-bottom: 0;
+}
+
+.student-login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.student-account-card {
+  max-width: 520px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.student-account-details {
+  display: grid;
+  gap: 8px;
+  color: var(--text-secondary);
+  overflow-wrap: anywhere;
+}
+
+.student-account-details strong {
+  color: #293e24;
+}
+
+.student-account-card form {
+  width: 100%;
+}
+
+@media (max-width: 700px) {
+  .alunos-page.student-area-page {
+    padding: 105px 0 48px;
+  }
 }
 
 @media (max-width: 700px) {
