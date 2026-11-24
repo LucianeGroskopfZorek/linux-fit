@@ -11,13 +11,13 @@
         <li><a href="{{ $isIndex ? '#inicio' : '/' }}" class="nav-link">Início</a></li>
         <li><a href="{{ $isIndex ? '#sobre' : '/#sobre' }}" class="nav-link">Sobre</a></li>
         <li><a href="{{ $isIndex ? '#modalidades' : '/#modalidades' }}" class="nav-link">Modalidades</a></li>
-        <li><a href="{{ route('alunos.index') }}" class="nav-link {{ $menuPage === 'alunos' ? 'active' : '' }}">Alunos</a></li>
+        <li><a href="{{ route('alunos.index') }}" class="nav-link {{ $menuPage === 'alunos' ? 'active' : '' }}">Faça seu cadastro</a></li>
+        <li><a href="{{ route('login') }}" class="nav-link {{ $menuPage === 'login' ? 'active' : '' }}">Entrar</a></li>
         <li><a href="{{ route('professores.index') }}" class="nav-link {{ $menuPage === 'professores' ? 'active' : '' }}">Professores</a></li>
         <li><a href="{{ $isIndex ? '#planos' : '/#planos' }}" class="nav-link">Planos</a></li>
         <li><a href="{{ $isIndex ? '#horarios' : '/#horarios' }}" class="nav-link">Horários</a></li>
         <li><a href="{{ $isIndex ? '#aulas' : '/#aulas' }}" class="nav-link {{ $menuPage === 'aulas' ? 'active' : '' }}">Aulas</a></li>
         <li><a href="{{ route('imc.index') }}" class="nav-link {{ $menuPage === 'imc' ? 'active' : '' }}">IMC</a></li>
-        <li><a href="{{ route('login') }}" class="nav-link {{ $menuPage === 'login' ? 'active' : '' }}">Entrar</a></li>
         <li><a href="{{ $isIndex ? '#contato' : '/#contato' }}" class="nav-link">Contato</a></li>
       </ul>
     </nav>

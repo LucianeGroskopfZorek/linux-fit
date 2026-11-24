@@ -3,6 +3,7 @@ use App\Http\Controllers\ProfessorController;
 use App\Http\Controllers\AlunoController;
 use App\Http\Controllers\ContatoController;
 use App\Http\Controllers\ImController;
+use App\Http\Controllers\PasswordRecoveryController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AgendarController;
 use App\Http\Controllers\AgendamentoAulasController;
@@ -68,6 +69,17 @@ Route::get('/login', [AlunoController::class, 'login'])->name('login');
 Route::post('/login', [AlunoController::class, 'entrar'])
     ->middleware('throttle:5,1')
     ->name('login.entrar');
+
+Route::get('/esqueci-senha', [PasswordRecoveryController::class, 'requestForm'])
+    ->name('password.request');
+Route::post('/esqueci-senha', [PasswordRecoveryController::class, 'sendLink'])
+    ->middleware('throttle:5,1')
+    ->name('password.email');
+Route::get('/redefinir-senha/{token}', [PasswordRecoveryController::class, 'resetForm'])
+    ->name('password.reset');
+Route::post('/redefinir-senha/{token}', [PasswordRecoveryController::class, 'updatePassword'])
+    ->middleware('throttle:5,1')
+    ->name('password.update');
 
 Route::get('/minha-area', [AlunoController::class, 'minhaArea'])
     ->name('minha-area');

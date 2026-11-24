@@ -78,6 +78,10 @@
       </header>
 
       <div class="alunos-form student-login-card">
+        @if (session('status'))
+          <div class="alunos-msg-sucesso" role="status">{{ session('status') }}</div>
+        @endif
+
         @if ($errors->any())
           <div class="alunos-msg-erro" role="alert">
             <p>Não foi possível entrar. Confira seus dados e tente novamente.</p>
@@ -120,6 +124,7 @@
           </div>
 
           <button class="btn btn-primary alunos-submit" type="submit">Entrar</button>
+          <a class="student-login-forgot" href="{{ route('password.request', ['tipo' => $tipoLogin]) }}">Esqueci minha senha</a>
         </form>
       </div>
     </section>
